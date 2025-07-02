@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Evaluación de Operarios - FAGASA</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f0f5; margin: 30px; }
+        h1 { color: #003366; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background: white; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #003366; color: white; }
+        input[type='number'], input[type='date'], input[type='text'] { width: 90%; }
+        .result { font-weight: bold; }
+        .btn { padding: 10px 20px; background: #003366; color: white; border: none; cursor: pointer; margin-right: 10px; }
+        .btn:hover { background: #005599; }
+        .filter { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<h1>Evaluación de Operarios - FAGASA</h1>
+
+<div class="filter">
+    <label>Desde: <input type="date" id="fechaInicio"></label>
+    <label>Hasta: <input type="date" id="fechaFin"></label>
+    <button class="btn" onclick="imprimirFiltrado()">Imprimir entre fechas</button>
+</div>
+
+<table id="tabla-evaluacion">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Nombre</th>
+            <th>Calidad</th>
+            <th>Productividad</th>
+            <th>Orden</th>
+            <th>Herramientas</th>
+            <th>Polivalencia</th>
+            <th>Colaboración</th>
+            <th>Actitud</th>
+            <th>Puntualidad</th>
+            <th>Iniciativa</th>
+            <th>Total</th>
+            <th>€ Incentivo</th>
+        </tr>
+    </thead>
+    <tbody id="cuerpo-tabla">
+        <tr>
+            <td><input type="date"></td>
+            <td><input type="text" placeholder="Operario"></td>
+            <td><input type="number" min="1" max="5"></td>
+            <td><input type="number" min="1" max="5"></td>
+            <td><input type="number" min="1" max="5"></td>
+            <td><input type="number" min="1" max="5"></td>
+            <td><input type="number" min="1" max="5"></td>
+            <td><input type="number" min="1" max="5"></td>
+            <td><input type="number" min="1" max="5"></td>
+            <td><input type="number" min="1" max="5"></td>
+            <td><input type="number" min="1" max="5"></td>
+            <td class="result">0</td>
+            <td class="result">0 €</td>
+        </tr>
+    </tbody>
+</table>
+
+<button class="btn" onclick="calcular()">Calcular Evaluaciones</button>
+<button class="btn" onclick="agregarFila()">Añadir Operario</button>
+
+<script>
+function calcular() {
+    const filas = document.querySelectorAll("#cuerpo-tabla tr");
+    filas.forEach(fila => {
+        let celdas = fila.querySelectorAll("input[type='number']");
+        let total = 0;
+        celdas.forEach(input => {
+            let val = parseInt(input.value);
+            if (!isNaN(val)) total += val;
+        });
+        let puntuacionFinal = (total * 100) / 45;
+        let incentivo = 0;
+        if (puntuacionFinal >= 85) incentivo = 150;
+        else if (puntuacionFinal >= 75) incentivo = 100;
+        else if (puntuacionFinal >= 65) incentivo = 0;
+        else incentivo = 0;
+
+        fila.querySelectorAll(".result")[0].textContent = puntuacionFinal.toFixed(1);
+        fila.querySelectorAll(".result")[1].textContent = incentivo + " €";
+    });
+}
+
+function agregarFila() {
+    const tabla = document.getElementById("cuerpo-tabla");
+    const nuevaFila = tabla.rows[0].cloneNode(true);
+    nuevaFila.querySelectorAll("input").forEach(input => input.value = "");
+    nuevaFila.querySelectorAll(".result").forEach(cell => cell.textContent = "0");
+    tabla.appendChild(nuevaFila);
+}
+
+function imprimirFiltrado() {
+    const inicio = document.getElementById("fechaInicio").value;
+    const fin = document.getElementById("fechaFin").value;
+    if (!inicio || !fin) {
+        alert("Por favor, selecciona ambas fechas.");
+        return;
+    }
+
+    const filas = document.querySelectorAll("#cuerpo-tabla tr");
+    filas.forEach(fila => fila.style.display = "table-row");
+
+    filas.forEach(fila => {
+        const fecha = fila.querySelector("input[type='date']").value;
+        if (fecha < inicio || fecha > fin) {
+            fila.style.display = "none";
+        }
+    });
+
+    window.print();
+
+    filas.forEach(fila => fila.style.display = "table-row");
+}
+</script>
+
+</body>
+</html>
