@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Evaluación de Operarios - FAGASA</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+        h1 { color: #003366; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input, select { width: 100%; padding: 8px; margin-top: 4px; }
+        button { margin-top: 20px; padding: 10px 20px; background-color: #003366; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #00509e; }
+    </style>
+</head>
+<body>
+    <h1>Evaluación de Operarios Clave - FAGASA</h1>
+    <form id="formulario">
+        <label>Nombre del trabajador:
+            <input type="text" name="nombre" required>
+        </label>
+        <label>Fecha (DD/MM/AA):
+            <input type="text" name="fecha" required placeholder="03/07/25">
+        </label>
+        <label>Calidad:
+            <input type="number" name="calidad" min="0" max="10">
+        </label>
+        <label>Productividad:
+            <input type="number" name="productividad" min="0" max="10">
+        </label>
+        <label>Orden y limpieza:
+            <input type="number" name="orden" min="0" max="10">
+        </label>
+        <label>Cambio de herramientas:
+            <input type="number" name="herramientas" min="0" max="10">
+        </label>
+        <label>Polivalencia:
+            <input type="number" name="polivalencia" min="0" max="10">
+        </label>
+        <label>Colaboración:
+            <input type="number" name="colaboracion" min="0" max="10">
+        </label>
+        <label>Actitud y compromiso:
+            <input type="number" name="actitud" min="0" max="10">
+        </label>
+        <label>Puntualidad y asistencia:
+            <input type="number" name="puntualidad" min="0" max="10">
+        </label>
+        <label>Iniciativas de mejora:
+            <input type="number" name="iniciativa" min="0" max="10">
+        </label>
+        <button type="submit">Guardar evaluación</button>
+    </form>
+    <p id="mensaje"></p>
+    <script>
+        const form = document.getElementById("formulario");
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const datos = Object.fromEntries(new FormData(form).entries());
+
+            const total = Object.values(datos).slice(2).reduce((acc, val) => acc + Number(val), 0);
+            datos.total = total;
+
+            if (total >= 85) datos.incentivo = "150 €";
+            else if (total >= 75) datos.incentivo = "100 €";
+            else if (total >= 65) datos.incentivo = "Sin incentivo";
+            else datos.incentivo = "Evaluación a revisar";
+
+            fetch("https://script.google.com/macros/s/AKfycbx-L5ePz6MUq93ZoXy7nSN50Re510eD7gbalb7RlCn-6JJZ4RwwCDLcCRGc9QT-tpGpOA/exec", {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datos),
+            });
+
+            document.getElementById("mensaje").innerText = "✅ Evaluación guardada correctamente.";
+            form.reset();
+        });
+    </script>
+</body>
+</html>
