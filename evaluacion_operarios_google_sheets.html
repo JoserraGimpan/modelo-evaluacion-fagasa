@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Evaluación de Operarios - FAGASA</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f7f7; padding: 20px; }
+    h1 { color: #003366; text-align: center; }
+    form { background: white; padding: 20px; border-radius: 8px; max-width: 800px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    label { display: block; margin-top: 10px; }
+    input[type='text'], input[type='date'], input[type='number'] { width: 100%; padding: 8px; margin-top: 5px; }
+    button { margin-top: 20px; padding: 10px 20px; background: #003366; color: white; border: none; cursor: pointer; }
+    button:hover { background: #005599; }
+  </style>
+</head>
+<body>
+
+<h1>Formulario de Evaluación de Operarios</h1>
+
+<form id="formulario">
+  <label>Nombre del operario:<input type="text" name="nombre" required></label>
+  <label>Fecha de evaluación:<input type="date" name="fecha" required></label>
+
+  <label>Calidad:<input type="number" name="calidad" min="1" max="5" required></label>
+  <label>Productividad:<input type="number" name="productividad" min="1" max="5" required></label>
+  <label>Orden:<input type="number" name="orden" min="1" max="5" required></label>
+  <label>Herramientas:<input type="number" name="herramientas" min="1" max="5" required></label>
+  <label>Polivalencia:<input type="number" name="polivalencia" min="1" max="5" required></label>
+  <label>Colaboración:<input type="number" name="colaboracion" min="1" max="5" required></label>
+  <label>Actitud:<input type="number" name="actitud" min="1" max="5" required></label>
+  <label>Puntualidad:<input type="number" name="puntualidad" min="1" max="5" required></label>
+  <label>Iniciativa:<input type="number" name="iniciativa" min="1" max="5" required></label>
+
+  <button type="submit">Guardar evaluación</button>
+</form>
+
+<script>
+document.getElementById("formulario").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+  const datos = {
+    nombre: formData.get("nombre"),
+    fecha: formData.get("fecha"),
+    calidad: parseInt(formData.get("calidad")),
+    productividad: parseInt(formData.get("productividad")),
+    orden: parseInt(formData.get("orden")),
+    herramientas: parseInt(formData.get("herramientas")),
+    polivalencia: parseInt(formData.get("polivalencia")),
+    colaboracion: parseInt(formData.get("colaboracion")),
+    actitud: parseInt(formData.get("actitud")),
+    puntualidad: parseInt(formData.get("puntualidad")),
+    iniciativa: parseInt(formData.get("iniciativa"))
+  };
+
+  const total = datos.calidad + datos.productividad + datos.orden + datos.herramientas + datos.polivalencia +
+                datos.colaboracion + datos.actitud + datos.puntualidad + datos.iniciativa;
+
+  datos.total = (total * 100 / 45).toFixed(1);
+  datos.incentivo = datos.total >= 85 ? 150 : datos.total >= 75 ? 100 : 0;
+
+  fetch("https://script.google.com/a/macros/joserrazarate.com/s/AKfycbzgPWBA3KUJ24UJLUCP5syHVqjJavnlYqQ8olXWvXvgw-u0PNPgobBadeZc_qY0yZ_q8g/exec", {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(datos)
+  }).then(() => {
+    alert("Evaluación guardada correctamente.");
+    document.getElementById("formulario").reset();
+  }).catch(() => {
+    alert("Error al enviar los datos.");
+  });
+});
+</script>
+
+</body>
+</html>
